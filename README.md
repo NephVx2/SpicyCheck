@@ -1,5 +1,6 @@
 # SpicyCheck
 
+🇫🇷 [Version française](README_FRENCH.md)
 
 An all-in-one Windows 11 maintenance script, one command: a full health diagnostic (CPU, RAM, disks, network, battery, uptime, event logs), temp-file cleanup, system repair via DISM/SFC/BCD, disk optimization (TRIM/defrag), and an HTML dashboard report — all tracked live in the console with ASCII-box framing and progress bars, fastfetch-style.
 
