@@ -23,12 +23,14 @@ Un script de maintenance Windows 11 tout-en-un, en une seule commande : diagnost
 
 ## Langue
 
-Depuis la v7.2, le code du script, la sortie console, le rapport HTML et le fichier log sont entierement en anglais, quelle que soit la langue de l'edition Windows sur laquelle il tourne. C'est un changement de langue du code/de l'interface uniquement — le script fonctionne toujours a l'identique sur une machine Windows en anglais comme en francais :
+Depuis la v7.3, le code du script, la sortie console, le rapport HTML et le fichier log sont entierement en anglais, quelle que soit la langue de l'edition Windows sur laquelle il tourne. C'est un changement de langue du code/de l'interface uniquement — le script fonctionne toujours a l'identique sur une machine Windows en anglais comme en francais :
 
 - **La detection de corruption DISM/SFC reste bilingue.** Ces outils repondent dans la langue du systeme, donc les patterns de detection matchent aussi bien la sortie francaise qu'anglaise (voir [Notes techniques](#notes-techniques--detection-dismsfc-bilingue-et-nettoyage-de-sortie)).
 - **L'affichage date/heure du rapport HTML suit la langue de l'OS**, pas celle du script — les noms de jour et de mois (`Get-Date -Format 'dddd dd MMMM yyyy'`) s'affichent dans la langue configuree sur la machine Windows elle-meme.
 
-Si vous utilisez une ancienne version de SpicyCheck (anterieure a la v7.2) qui utilisait encore des noms de parametres, de dossiers et un texte console en francais, voir [Parametres en ligne de commande](#parametres-en-ligne-de-commande) et [Rapports generes](#rapports-generes) ci-dessous pour le detail des changements.
+Si vous utilisez une ancienne version de SpicyCheck (anterieure a la v7.3) qui utilisait encore des noms de parametres, de dossiers et un texte console en francais, voir [Parametres en ligne de commande](#parametres-en-ligne-de-commande) et [Rapports generes](#rapports-generes) ci-dessous pour le detail des changements.
+
+**Vous preferez une interface entierement en francais (parametres, messages console, rapport HTML) ?** Les deux versions ont exactement les memes fonctionnalites — seule la langue du code/de l'interface change. La derniere version francaise (v7.2) reste disponible ici : [FRENCH_SpicyCheck v7.2](https://github.com/NephVx2/SpicyCheck-v7.2/releases/tag/v7.2). Elle n'est plus mise a jour ; les correctifs et nouveautes futurs sortiront uniquement sur la version anglaise.
 
 ---
 
@@ -51,7 +53,7 @@ Si vous utilisez une ancienne version de SpicyCheck (anterieure a la v7.2) qui u
 
 ## Presentation
 
-`SpicyCheck-v7_2.ps1` execute en une passe un cycle de maintenance Windows 11 complet : affichage des informations systeme (style fastfetch), diagnostic de sante (~16 controles independants), nettoyage des fichiers temporaires/caches, reparation systeme (DISM CheckHealth → ScanHealth → RestoreHealth conditionnel → SFC scannow → verification du bootloader), optimisation des disques (TRIM pour SSD, defragmentation pour HDD), puis generation d'un rapport HTML avec tableau de bord.
+`SpicyCheck-v7_3.ps1` execute en une passe un cycle de maintenance Windows 11 complet : affichage des informations systeme (style fastfetch), diagnostic de sante (~16 controles independants), nettoyage des fichiers temporaires/caches, reparation systeme (DISM CheckHealth → ScanHealth → RestoreHealth conditionnel → SFC scannow → verification du bootloader), optimisation des disques (TRIM pour SSD, defragmentation pour HDD), puis generation d'un rapport HTML avec tableau de bord.
 
 Chaque etape est journalisee (`maintenance_<horodatage>.log`) et chaque operation est classee par statut (`OK` / `WARN` / `ERROR` / `SKIP`), affiche en direct dans la console avec code couleur et repris a l'identique dans le rapport HTML final.
 
@@ -143,14 +145,14 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 
 ## Premier lancement (pas a pas)
 
-1. Copier `SpicyCheck-v7_2.ps1` sur la machine cible.
+1. Copier `SpicyCheck-v7_3.ps1` sur la machine cible.
 
 2. Ouvrir PowerShell **en tant qu'Administrateur** — le script exige l'elevation des le depart et ne s'auto-eleve pas.
 
 3. Lancer d'abord le self-test — aucun fichier ecrit, aucune modification systeme :
 
    ```powershell
-   .\SpicyCheck-v7_2.ps1 -SelfTest
+   .\SpicyCheck-v7_3.ps1 -SelfTest
    ```
 
    Execute 36 assertions internes (fonctions utilitaires, binaires requis presents, cmdlets et classes WMI interrogeables, dossier de rapports accessible en ecriture, session elevee). Code de sortie `0` = tout passe, `1` = au moins un echec.
@@ -158,7 +160,7 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 4. Lancer le run complet :
 
    ```powershell
-   .\SpicyCheck-v7_2.ps1
+   .\SpicyCheck-v7_3.ps1
    ```
 
    Suivre en direct la progression a travers les 6 etapes (`Step X / 6`) dans la console, avec le detail colore de chaque operation. La phase de reparation (DISM ScanHealth notamment) est generalement la plus longue.
@@ -185,10 +187,10 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 **Exemples :**
 
 ```powershell
-.\SpicyCheck-v7_2.ps1 -SelfTest
-.\SpicyCheck-v7_2.ps1
-.\SpicyCheck-v7_2.ps1 -Silent -ExportJSON
-.\SpicyCheck-v7_2.ps1 -SkipOptimization
+.\SpicyCheck-v7_3.ps1 -SelfTest
+.\SpicyCheck-v7_3.ps1
+.\SpicyCheck-v7_3.ps1 -Silent -ExportJSON
+.\SpicyCheck-v7_3.ps1 -SkipOptimization
 ```
 
 ---
@@ -224,7 +226,7 @@ En cas d'erreur fatale non geree, un fichier `MAINTENANCE_ERROR.txt` est egaleme
    | Champ | Valeur |
    |---|---|
    | Programme/script | `pwsh.exe` (ou `powershell.exe`) |
-   | Arguments | `-NoProfile -ExecutionPolicy Bypass -File "C:\Scripts\SpicyCheck-v7_2.ps1" -Silent` |
+   | Arguments | `-NoProfile -ExecutionPolicy Bypass -File "C:\Scripts\SpicyCheck-v7_3.ps1" -Silent` |
    | Executer avec les autorisations maximales | Oui |
 
 5. Les rapports et logs sont **propres a chaque machine**, ecrits localement sur le Bureau de l'utilisateur executant la tache — aucune donnee n'est centralisee automatiquement. Pour une vue consolidee sur un parc, prevoir une etape de collecte separee par-dessus ce script.
