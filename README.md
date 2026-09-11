@@ -8,6 +8,19 @@ An all-in-one Windows 11 maintenance script, one command: a full health diagnost
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banner and system information">
+  <img src="screenshots/02-final-summary.png" width="49%" alt="Final summary">
+</p>
+<p align="center">
+  <img src="screenshots/03-operations-detail.png" width="49%" alt="Full operations detail">
+  <img src="screenshots/04-html-report.png" width="49%" alt="HTML dashboard report">
+</p>
+
+---
+
 ## Language
 
 As of v7.2, the script's code, console output, HTML report, and log file are entirely in English, regardless of which Windows language edition it runs on. This is a UI/code change only — the script still works identically on both English- and French-language Windows machines:
@@ -21,6 +34,7 @@ If you're running an older copy of SpicyCheck (pre-v7.2) that still used French 
 
 ## Table of contents
 
+- [Screenshots](#screenshots)
 - [Language](#language)
 - [Overview](#overview)
 - [How the health diagnostic works](#how-the-health-diagnostic-works)
