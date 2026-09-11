@@ -4,12 +4,24 @@
 
 An all-in-one Windows 11 maintenance script, one command: a full health diagnostic (CPU, RAM, disks, network, battery, uptime, event logs), temp-file cleanup, system repair via DISM/SFC/BCD, disk optimization (TRIM/defrag), and an HTML dashboard report — all tracked live in the console with ASCII-box framing and progress bars, fastfetch-style.
 
-> Every health verdict (`BON`/`MOYEN`/`CRITIQUE` — Good/Fair/Critical) rests on an explicit threshold documented below, never a vague impression. DISM/SFC corruption detection is bilingual (French/English) and actively cleans the raw output of both binaries, which can be captured with encoding artifacts (null bytes, mis-decoded accented characters) depending on console configuration — a trap that, without this cleanup, can silently make a corrupted-file detection disappear.
+> Every health verdict (`GOOD`/`MEDIUM`/`CRITICAL`) rests on an explicit threshold documented below, never a vague impression. DISM/SFC corruption detection is bilingual (French/English) and actively cleans the raw output of both binaries, which can be captured with encoding artifacts (null bytes, mis-decoded accented characters) depending on console configuration — a trap that, without this cleanup, can silently make a corrupted-file detection disappear.
+
+---
+
+## Language
+
+As of v7.2, the script's code, console output, HTML report, and log file are entirely in English, regardless of which Windows language edition it runs on. This is a UI/code change only — the script still works identically on both English- and French-language Windows machines:
+
+- **DISM/SFC corruption detection stays bilingual.** These tools reply in the OS's own language, so the detection patterns match French and English output alike (see [Technical notes](#technical-notes-bilingual-dismsfc-detection-and-output-cleaning)).
+- **The HTML report's date/time display follows the OS locale**, not the script's language — day and month names (`Get-Date -Format 'dddd dd MMMM yyyy'`) render in whichever language Windows itself is set to.
+
+If you're running an older copy of SpicyCheck (pre-v7.2) that still used French parameter names, folder names, and console text, see [Command-line parameters](#command-line-parameters) and [Generated reports](#generated-reports) below for what changed.
 
 ---
 
 ## Table of contents
 
+- [Language](#language)
 - [Overview](#overview)
 - [How the health diagnostic works](#how-the-health-diagnostic-works)
 - [The 6 steps](#the-6-steps)
@@ -33,11 +45,11 @@ Every step is logged (`maintenance_<timestamp>.log`) and every operation is clas
 
 ## How the health diagnostic works
 
-Unlike a weighted-score system (see `Check-Security_Win11` elsewhere in this suite), SpicyCheck uses a simple, deliberately conservative "worst case wins" logic: the overall status shown (`BON`/`MOYEN`/`CRITIQUE` — Good/Fair/Critical) equals the single worst individual status observed across all health checks. One component in `CRITIQUE` is enough to push the entire diagnostic to `CRITIQUE`, no matter how many other components are healthy.
+Unlike a weighted-score system (see `Check-Security_Win11` elsewhere in this suite), SpicyCheck uses a simple, deliberately conservative "worst case wins" logic: the overall status shown (`GOOD`/`MEDIUM`/`CRITICAL`) equals the single worst individual status observed across all health checks. One component in `CRITICAL` is enough to push the entire diagnostic to `CRITICAL`, no matter how many other components are healthy.
 
 **Thresholds applied per check:**
 
-| Check | MOYEN (Fair) | CRITIQUE (Critical) |
+| Check | MEDIUM | CRITICAL |
 |---|---|---|
 | CPU load | > 70% | > 90% |
 | CPU frequency (throttling) | < 40% of max clock | — |
@@ -51,7 +63,7 @@ Unlike a weighted-score system (see `Check-Security_Win11` elsewhere in this sui
 | Uptime | > 30 days | > 60 days |
 | System/Application events (1h, Error/Critical level) | > 5 | > 20 |
 
-This same diagnostic feeds both the score shown live in the console during step 2/6, **and** the final HTML report and the end-of-run console summary — both now draw from the same data source (`$Script:Sante`), guaranteeing that what you see during the run is exactly what the report archives.
+This same diagnostic feeds both the score shown live in the console during step 2/6, **and** the final HTML report and the end-of-run console summary — both now draw from the same data source (`$Script:Health`), guaranteeing that what you see during the run is exactly what the report archives.
 
 ---
 
@@ -101,7 +113,7 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
 **1. Localization.** The output of `dism.exe` and `sfc.exe` is in the system's language. Detection based solely on English strings (`"repairable"`, `"did not find any integrity violations"`, etc.) never matches on a French-language Windows install — corruption could be detected by DISM without ever triggering `RestoreHealth`. All detections are now bilingual (`repairable|réparable`, `aucune violation`, etc.).
 
-**2. Console encoding.** On some configurations, the output of `sfc.exe` (and occasionally `dism.exe`) is captured with a null byte interleaved between every character, and accented letters mis-decoded (a UTF-16LE artifact re-read through the OEM/CP437 codepage — `é` becomes `Ú`, `è` becomes `Þ`, etc.). Without cleanup, a regex that matches perfectly in testing can silently never match the machine's actual output, causing a critical detection to fall through to the generic `OK` status. The `ConvertTo-SortieProprete` function systematically cleans this output (stripping null bytes and control characters) before any pattern matching, across all 4 relevant DISM/SFC calls.
+**2. Console encoding.** On some configurations, the output of `sfc.exe` (and occasionally `dism.exe`) is captured with a null byte interleaved between every character, and accented letters mis-decoded (a UTF-16LE artifact re-read through the OEM/CP437 codepage — `é` becomes `Ú`, `è` becomes `Þ`, etc.). Without cleanup, a regex that matches perfectly in testing can silently never match the machine's actual output, causing a critical detection to fall through to the generic `OK` status. The `ConvertTo-CleanOutput` function systematically cleans this output (stripping null bytes and control characters) before any pattern matching, across all 4 relevant DISM/SFC calls.
 
 ---
 
@@ -135,11 +147,11 @@ Two pitfalls were identified and fixed during development, documented here to pr
    .\SpicyCheck-v7_2.ps1
    ```
 
-   Watch the live progress through all 6 steps (`Etape X / 6`) in the console, with color-coded detail for each operation. The repair phase (DISM ScanHealth especially) is usually the longest.
+   Watch the live progress through all 6 steps (`Step X / 6`) in the console, with color-coded detail for each operation. The repair phase (DISM ScanHealth especially) is usually the longest.
 
 5. At the end, the console shows the "Final Summary" (duration, OK/WARN/ERROR counters, overall health status), followed by a detailed table of every operation.
 
-6. The script prompts `Ouvrir dans le navigateur ? [O/n]` (Open in browser?) — answering `O`/Yes (or just Enter) opens the generated HTML report directly.
+6. The script prompts `Open in browser? [Y/n]` — answering `Y`/Yes (or just Enter) opens the generated HTML report directly.
 
 7. For automated or repeated runs, use `-Silent` (see below) and check the HTML report afterwards.
 
@@ -149,11 +161,11 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
 | Parameter | Description |
 |---|---|
-| `-SauterNettoyage` | Skips step 3 (cleanup). |
-| `-SauterReparation` | Skips step 4 (DISM/SFC/BCD). |
-| `-SauterOptimisation` | Skips step 5 (TRIM/defrag/WinSxS). |
+| `-SkipCleanup` | Skips step 3 (cleanup). |
+| `-SkipRepair` | Skips step 4 (DISM/SFC/BCD). |
+| `-SkipOptimization` | Skips step 5 (TRIM/defrag/WinSxS). |
 | `-Silent` | Disables all console output (banner, progress, summary, browser prompt, final pause). Reports are still generated normally — built for scheduled-task use. |
-| `-ExportJSON` | Also exports the full raw result set as JSON (`rapport_<timestamp>.json`). |
+| `-ExportJSON` | Also exports the full raw result set as JSON (`report_<timestamp>.json`). |
 | `-SelfTest` | Runs the 36-assertion internal test suite then exits. No report generated, nothing changed on the system. Exit code `0`/`1`. |
 
 **Examples:**
@@ -162,7 +174,7 @@ Two pitfalls were identified and fixed during development, documented here to pr
 .\SpicyCheck-v7_2.ps1 -SelfTest
 .\SpicyCheck-v7_2.ps1
 .\SpicyCheck-v7_2.ps1 -Silent -ExportJSON
-.\SpicyCheck-v7_2.ps1 -SauterOptimisation
+.\SpicyCheck-v7_2.ps1 -SkipOptimization
 ```
 
 ---
@@ -172,16 +184,16 @@ Two pitfalls were identified and fixed during development, documented here to pr
 Every real run (excluding `-SelfTest`) writes to:
 
 ```
-%USERPROFILE%\Desktop\Rapports_Maintenance\
+%USERPROFILE%\Desktop\Maintenance_Reports\
 ```
 
 | File | Content |
 |---|---|
-| `rapport_<timestamp>.html` | Full dashboard: overall-status banner, summary cards, System Information panel, Health Diagnostic panel, full Operations Detail table grouped by section |
+| `report_<timestamp>.html` | Full dashboard: overall-status banner, summary cards, System Information panel, Health Diagnostic panel, full Operations Detail table grouped by section |
 | `maintenance_<timestamp>.log` | Plain-text timestamped log of every operation, including the (cleaned) raw output of DISM/SFC — useful for after-the-fact troubleshooting |
-| `rapport_<timestamp>.json` | Full JSON export of the complete result set (only with `-ExportJSON`) |
+| `report_<timestamp>.json` | Full JSON export of the complete result set (only with `-ExportJSON`) |
 
-On an unhandled fatal error, a `MAINTENANCE_ERREUR.txt` file is also written directly to the Desktop.
+On an unhandled fatal error, a `MAINTENANCE_ERROR.txt` file is also written directly to the Desktop.
 
 ---
 
@@ -228,7 +240,7 @@ Check the `DISM ScanHealth :` line in the `.log` and confirm the text actually c
 </details>
 
 <details>
-<summary><strong>SFC shows "Verification terminee" instead of a precise status</strong></summary>
+<summary><strong>SFC shows "Verification completed" instead of a precise status</strong></summary>
 
 This is the expected fallback when none of the 4 known patterns (no violations / repaired / not repairable / operation failed) match — usually a sign of an unusual SFC message or an uncovered language. Inspect the `SFC :` line in the `.log` (already cleaned of null bytes) to identify the exact text.
 </details>
