@@ -23,12 +23,14 @@ An all-in-one Windows 11 maintenance script, one command: a full health diagnost
 
 ## Language
 
-As of v7.2, the script's code, console output, HTML report, and log file are entirely in English, regardless of which Windows language edition it runs on. This is a UI/code change only — the script still works identically on both English- and French-language Windows machines:
+As of v7.3, the script's code, console output, HTML report, and log file are entirely in English, regardless of which Windows language edition it runs on. This is a UI/code change only — the script still works identically on both English- and French-language Windows machines:
 
 - **DISM/SFC corruption detection stays bilingual.** These tools reply in the OS's own language, so the detection patterns match French and English output alike (see [Technical notes](#technical-notes-bilingual-dismsfc-detection-and-output-cleaning)).
 - **The HTML report's date/time display follows the OS locale**, not the script's language — day and month names (`Get-Date -Format 'dddd dd MMMM yyyy'`) render in whichever language Windows itself is set to.
 
-If you're running an older copy of SpicyCheck (pre-v7.2) that still used French parameter names, folder names, and console text, see [Command-line parameters](#command-line-parameters) and [Generated reports](#generated-reports) below for what changed.
+If you're running an older copy of SpicyCheck (pre-v7.3) that still used French parameter names, folder names, and console text, see [Command-line parameters](#command-line-parameters) and [Generated reports](#generated-reports) below for what changed.
+
+**Prefer a fully French-language interface (parameters, console messages, HTML report)?** Both versions have identical functionality — only the code/interface language differs. The last French-language version (v7.2) remains available here: [FRENCH_SpicyCheck v7.2](https://github.com/NephVx2/SpicyCheck-v7.2/releases/tag/v7.2). It's no longer maintained; future fixes and features will ship on the English version only.
 
 ---
 
@@ -51,7 +53,7 @@ If you're running an older copy of SpicyCheck (pre-v7.2) that still used French 
 
 ## Overview
 
-`SpicyCheck-v7_2.ps1` runs a complete Windows 11 maintenance cycle in a single pass: system info display (fastfetch-style), a health diagnostic (~16 independent checks), temp-file/cache cleanup, system repair (DISM CheckHealth → ScanHealth → conditional RestoreHealth → SFC scannow → bootloader verification), disk optimization (TRIM for SSDs, defrag for HDDs), then generation of an HTML dashboard report.
+`SpicyCheck-v7_3.ps1` runs a complete Windows 11 maintenance cycle in a single pass: system info display (fastfetch-style), a health diagnostic (~16 independent checks), temp-file/cache cleanup, system repair (DISM CheckHealth → ScanHealth → conditional RestoreHealth → SFC scannow → bootloader verification), disk optimization (TRIM for SSDs, defrag for HDDs), then generation of an HTML dashboard report.
 
 Every step is logged (`maintenance_<timestamp>.log`) and every operation is classified by status (`OK` / `WARN` / `ERROR` / `SKIP`), shown live in the console with color coding and reproduced identically in the final HTML report.
 
@@ -143,14 +145,14 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
 ## First run (step by step)
 
-1. Copy `SpicyCheck-v7_2.ps1` to the target machine.
+1. Copy `SpicyCheck-v7_3.ps1` to the target machine.
 
 2. Open PowerShell **as Administrator** — the script requires elevation up front and does not self-elevate.
 
 3. Run the self-test first — no files written, no system changes:
 
    ```powershell
-   .\SpicyCheck-v7_2.ps1 -SelfTest
+   .\SpicyCheck-v7_3.ps1 -SelfTest
    ```
 
    Runs 36 internal assertions (utility functions, required binaries present, cmdlets/WMI classes queryable, reports folder writable, elevated session). Exit code `0` = all passed, `1` = at least one failure.
@@ -158,7 +160,7 @@ Two pitfalls were identified and fixed during development, documented here to pr
 4. Run the full pass:
 
    ```powershell
-   .\SpicyCheck-v7_2.ps1
+   .\SpicyCheck-v7_3.ps1
    ```
 
    Watch the live progress through all 6 steps (`Step X / 6`) in the console, with color-coded detail for each operation. The repair phase (DISM ScanHealth especially) is usually the longest.
@@ -185,10 +187,10 @@ Two pitfalls were identified and fixed during development, documented here to pr
 **Examples:**
 
 ```powershell
-.\SpicyCheck-v7_2.ps1 -SelfTest
-.\SpicyCheck-v7_2.ps1
-.\SpicyCheck-v7_2.ps1 -Silent -ExportJSON
-.\SpicyCheck-v7_2.ps1 -SkipOptimization
+.\SpicyCheck-v7_3.ps1 -SelfTest
+.\SpicyCheck-v7_3.ps1
+.\SpicyCheck-v7_3.ps1 -Silent -ExportJSON
+.\SpicyCheck-v7_3.ps1 -SkipOptimization
 ```
 
 ---
@@ -224,7 +226,7 @@ On an unhandled fatal error, a `MAINTENANCE_ERROR.txt` file is also written dire
    | Field | Value |
    |---|---|
    | Program/script | `pwsh.exe` (or `powershell.exe`) |
-   | Arguments | `-NoProfile -ExecutionPolicy Bypass -File "C:\Scripts\SpicyCheck-v7_2.ps1" -Silent` |
+   | Arguments | `-NoProfile -ExecutionPolicy Bypass -File "C:\Scripts\SpicyCheck-v7_3.ps1" -Silent` |
    | Run with highest privileges | Yes |
 
 5. Reports and logs are **local to each machine**, written to the Desktop of the user running the task — nothing is centralized automatically. For a fleet-wide consolidated view, add a separate collection step (network share, log shipping) on top of this script.
