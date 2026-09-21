@@ -149,7 +149,21 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 
 2. Ouvrir PowerShell **en tant qu'Administrateur** — le script exige l'elevation des le depart et ne s'auto-eleve pas.
 
-3. Lancer d'abord le self-test — aucun fichier ecrit, aucune modification systeme :
+3. **Debloquer le script** s'il a ete telecharge depuis Internet. Windows marque les fichiers telecharges, et la politique d'execution de PowerShell (`RemoteSigned`, par exemple) refuse de lancer un script marque. Dans cette meme fenetre Administrateur, depuis le dossier du script :
+
+   ```powershell
+   Unblock-File .\SpicyCheck-v7_3.ps1
+   ```
+
+   Si PowerShell indique plutot que l'execution de scripts est desactivee sur ce systeme (la politique par defaut de Windows est `Restricted`), autoriser d'abord les scripts pour le compte courant (la modification ne s'applique qu'a ce compte, pas a toute la machine) :
+
+   ```powershell
+   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+   ```
+
+   Toujours bloque ? Voir le [guide pas a pas](https://github.com/NephVx2/Script-blocked-Look-at-this/blob/main/README_POWERSHELL_FRENCH.md).
+
+4. Lancer d'abord le self-test — aucun fichier ecrit, aucune modification systeme :
 
    ```powershell
    .\SpicyCheck-v7_3.ps1 -SelfTest
@@ -157,7 +171,7 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 
    Execute 36 assertions internes (fonctions utilitaires, binaires requis presents, cmdlets et classes WMI interrogeables, dossier de rapports accessible en ecriture, session elevee). Code de sortie `0` = tout passe, `1` = au moins un echec.
 
-4. Lancer le run complet :
+5. Lancer le run complet :
 
    ```powershell
    .\SpicyCheck-v7_3.ps1
@@ -165,11 +179,11 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 
    Suivre en direct la progression a travers les 6 etapes (`Step X / 6`) dans la console, avec le detail colore de chaque operation. La phase de reparation (DISM ScanHealth notamment) est generalement la plus longue.
 
-5. A la fin, la console affiche le "Final Summary" (duree, compteurs OK/WARN/ERROR, etat de sante global) puis un tableau detaille de toutes les operations.
+6. A la fin, la console affiche le "Final Summary" (duree, compteurs OK/WARN/ERROR, etat de sante global) puis un tableau detaille de toutes les operations.
 
-6. Le script demande `Open in browser? [Y/n]` — repondre `Y` (ou Entree) ouvre directement le rapport HTML genere.
+7. Le script demande `Open in browser? [Y/n]` — repondre `Y` (ou Entree) ouvre directement le rapport HTML genere.
 
-7. Pour des runs automatises ou repetes, utiliser `-Silent` (voir ci-dessous) et consulter uniquement le rapport HTML apres coup.
+8. Pour des runs automatises ou repetes, utiliser `-Silent` (voir ci-dessous) et consulter uniquement le rapport HTML apres coup.
 
 ---
 
@@ -236,6 +250,18 @@ En cas d'erreur fatale non geree, un fichier `MAINTENANCE_ERROR.txt` est egaleme
 ---
 
 ## Depannage
+
+<details>
+<summary><strong>PowerShell indique que le script est bloque, "n'est pas signe numeriquement", ou que l'execution de scripts est desactivee</strong></summary>
+
+Deux mecanismes entrent en jeu, et le correctif depend du message :
+
+- **"n'est pas signe numeriquement"** (`is not digitally signed` sur un Windows en anglais, avec `RemoteSigned`) : Windows a marque le fichier comme telecharge. Lancer `Unblock-File .\SpicyCheck-v7_3.ps1` (ou cocher **Debloquer** dans les Proprietes du fichier). Si le script vient d'un `.zip`, debloquer le `.zip` avant de l'extraire.
+- **"l'execution de scripts est desactivee sur ce systeme"** (`running scripts is disabled on this system`) : la politique d'execution est `Restricted`. Lancer `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`, puis debloquer le fichier comme ci-dessus.
+- **Rien ne marche** : `Get-ExecutionPolicy -List` indique si une strategie de groupe impose le reglage (`MachinePolicy` ou `UserPolicy` different de `Undefined`) — seul l'administrateur de la machine peut la changer.
+
+Le [guide pas a pas](https://github.com/NephVx2/Script-blocked-Look-at-this/blob/main/README_POWERSHELL_FRENCH.md) detaille tout cela, avec en plus les avertissements SmartScreen/Defender et un lancement ponctuel avec `-ExecutionPolicy Bypass`.
+</details>
 
 <details>
 <summary><strong>Le script ne demarre pas du tout</strong></summary>
