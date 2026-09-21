@@ -149,7 +149,21 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
 2. Open PowerShell **as Administrator** — the script requires elevation up front and does not self-elevate.
 
-3. Run the self-test first — no files written, no system changes:
+3. **Unblock the script** if you downloaded it from the Internet. Windows flags downloaded files, and PowerShell's execution policy (`RemoteSigned`, for example) refuses to run a flagged script. In that same Administrator window, from the script's folder:
+
+   ```powershell
+   Unblock-File .\SpicyCheck-v7_3.ps1
+   ```
+
+   If PowerShell says instead that running scripts is disabled on this system (the Windows default policy is `Restricted`), allow scripts for the current account first (the change applies to this account only, not to the whole machine):
+
+   ```powershell
+   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+   ```
+
+   Still blocked? See the [step-by-step guide](https://github.com/NephVx2/Script-blocked-Look-at-this).
+
+4. Run the self-test first — no files written, no system changes:
 
    ```powershell
    .\SpicyCheck-v7_3.ps1 -SelfTest
@@ -157,7 +171,7 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
    Runs 36 internal assertions (utility functions, required binaries present, cmdlets/WMI classes queryable, reports folder writable, elevated session). Exit code `0` = all passed, `1` = at least one failure.
 
-4. Run the full pass:
+5. Run the full pass:
 
    ```powershell
    .\SpicyCheck-v7_3.ps1
@@ -165,11 +179,11 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
    Watch the live progress through all 6 steps (`Step X / 6`) in the console, with color-coded detail for each operation. The repair phase (DISM ScanHealth especially) is usually the longest.
 
-5. At the end, the console shows the "Final Summary" (duration, OK/WARN/ERROR counters, overall health status), followed by a detailed table of every operation.
+6. At the end, the console shows the "Final Summary" (duration, OK/WARN/ERROR counters, overall health status), followed by a detailed table of every operation.
 
-6. The script prompts `Open in browser? [Y/n]` — answering `Y`/Yes (or just Enter) opens the generated HTML report directly.
+7. The script prompts `Open in browser? [Y/n]` — answering `Y`/Yes (or just Enter) opens the generated HTML report directly.
 
-7. For automated or repeated runs, use `-Silent` (see below) and check the HTML report afterwards.
+8. For automated or repeated runs, use `-Silent` (see below) and check the HTML report afterwards.
 
 ---
 
@@ -236,6 +250,18 @@ On an unhandled fatal error, a `MAINTENANCE_ERROR.txt` file is also written dire
 ---
 
 ## Troubleshooting
+
+<details>
+<summary><strong>PowerShell says the script is blocked, "not digitally signed", or that running scripts is disabled</strong></summary>
+
+Two mechanisms are at play, and the fix depends on the message:
+
+- **"...is not digitally signed"** (with `RemoteSigned`): Windows flagged the file as downloaded. Run `Unblock-File .\SpicyCheck-v7_3.ps1` (or tick **Unblock** in the file's Properties). If it came in a `.zip`, unblock the `.zip` before extracting it.
+- **"running scripts is disabled on this system"**: the execution policy is `Restricted`. Run `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`, then unblock the file as above.
+- **Neither works**: `Get-ExecutionPolicy -List` shows whether a Group Policy enforces the setting (`MachinePolicy` or `UserPolicy` not `Undefined`) — only the machine's administrator can change that.
+
+The [step-by-step guide](https://github.com/NephVx2/Script-blocked-Look-at-this) covers all of this in detail, plus SmartScreen/Defender warnings and a one-off `-ExecutionPolicy Bypass` run.
+</details>
 
 <details>
 <summary><strong>The script doesn't start at all</strong></summary>
