@@ -149,6 +149,12 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 
 2. Ouvrir PowerShell **en tant qu'Administrateur** — le script exige l'elevation des le depart et ne s'auto-eleve pas.
 
+   Puis se placer dans le dossier qui contient le script (adapter le chemin ; garder les guillemets s'il contient des espaces) :
+
+   ```powershell
+   cd "$HOME\Downloads"
+   ```
+
 3. **Debloquer le script** s'il a ete telecharge depuis Internet. Windows marque les fichiers telecharges, et la politique d'execution de PowerShell (`RemoteSigned`, par exemple) refuse de lancer un script marque. Dans cette meme fenetre Administrateur, depuis le dossier du script :
 
    ```powershell
