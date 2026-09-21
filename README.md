@@ -149,6 +149,12 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
 2. Open PowerShell **as Administrator** — the script requires elevation up front and does not self-elevate.
 
+   Then go to the folder that contains the script (adjust the path; keep the quotes if it contains spaces):
+
+   ```powershell
+   cd "$HOME\Downloads"
+   ```
+
 3. **Unblock the script** if you downloaded it from the Internet. Windows flags downloaded files, and PowerShell's execution policy (`RemoteSigned`, for example) refuses to run a flagged script. In that same Administrator window, from the script's folder:
 
    ```powershell
