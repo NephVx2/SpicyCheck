@@ -8,16 +8,20 @@ An all-in-one Windows 11 maintenance script, one command: a full health diagnost
 
 ---
 
-## Screenshots
+## Table of contents
 
-<p align="center">
-  <img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banner and system information">
-  <img src="screenshots/02-final-summary.png" width="49%" alt="Final summary">
-</p>
-<p align="center">
-  <img src="screenshots/03-operations-detail.png" width="49%" alt="Full operations detail">
-  <img src="screenshots/04-html-report.png" width="49%" alt="HTML dashboard report">
-</p>
+- [Language](#language)
+- [Overview](#overview)
+- [Screenshots](#screenshots)
+- [How the health diagnostic works](#how-the-health-diagnostic-works)
+- [The 6 steps](#the-6-steps)
+- [Technical notes: bilingual DISM/SFC detection and output cleaning](#technical-notes-bilingual-dismsfc-detection-and-output-cleaning)
+- [Requirements](#requirements)
+- [First run](#first-run-step-by-step)
+- [Command-line parameters](#command-line-parameters)
+- [Generated reports](#generated-reports)
+- [Multi-machine deployment](#multi-machine-deployment)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -34,28 +38,22 @@ If you're running an older copy of SpicyCheck (pre-v7.3) that still used French 
 
 ---
 
-## Table of contents
-
-- [Screenshots](#screenshots)
-- [Language](#language)
-- [Overview](#overview)
-- [How the health diagnostic works](#how-the-health-diagnostic-works)
-- [The 6 steps](#the-6-steps)
-- [Technical notes: bilingual DISM/SFC detection and output cleaning](#technical-notes-bilingual-dismsfc-detection-and-output-cleaning)
-- [Requirements](#requirements)
-- [First run](#first-run-step-by-step)
-- [Command-line parameters](#command-line-parameters)
-- [Generated reports](#generated-reports)
-- [Multi-machine deployment](#multi-machine-deployment)
-- [Troubleshooting](#troubleshooting)
-
----
-
 ## Overview
 
 `SpicyCheck-v7_3.ps1` runs a complete Windows 11 maintenance cycle in a single pass: system info display (fastfetch-style), a health diagnostic (~16 independent checks), temp-file/cache cleanup, system repair (DISM CheckHealth → ScanHealth → conditional RestoreHealth → SFC scannow → bootloader verification), disk optimization (TRIM for SSDs, defrag for HDDs), then generation of an HTML dashboard report.
 
 Every step is logged (`maintenance_<timestamp>.log`) and every operation is classified by status (`OK` / `WARN` / `ERROR` / `SKIP`), shown live in the console with color coding and reproduced identically in the final HTML report.
+
+---
+
+## Screenshots
+
+<p align="center">
+  <a href="screenshots/01-banner-sysinfo.png" target="_blank"><img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banner and system information"></a>
+  <a href="screenshots/04-html-report.png" target="_blank"><img src="screenshots/04-html-report.png" width="49%" alt="HTML dashboard report"></a>
+</p>
+
+More screenshots (final summary, full operations detail) are available in the [`screenshots/`](screenshots/) folder.
 
 ---
 
