@@ -49,8 +49,8 @@ Chaque etape est journalisee (`maintenance_<horodatage>.log`) et chaque operatio
 ## Captures d'ecran
 
 <p align="center">
-  <a href="screenshots/01-banner-sysinfo.png" target="_blank"><img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banniere et informations systeme"></a>
-  <a href="screenshots/04-html-report.png" target="_blank"><img src="screenshots/04-html-report.png" width="49%" alt="Rapport HTML"></a>
+  <img src="https://raw.githubusercontent.com/NephVx2/SpicyCheck/main/screenshots/01-banner-sysinfo.png" width="49%">
+  <img src="https://raw.githubusercontent.com/NephVx2/SpicyCheck/main/screenshots/04-html-report.png" width="49%">
 </p>
 
 D'autres captures (resume final, detail complet des operations) sont disponibles dans le dossier [`screenshots/`](screenshots/).
