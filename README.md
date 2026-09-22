@@ -48,9 +48,11 @@ Every step is logged (`maintenance_<timestamp>.log`) and every operation is clas
 
 ## Screenshots
 
+*Click an image to open it full-size in GitHub's built-in viewer, without leaving the page.*
+
 <p align="center">
-  <a href="screenshots/01-banner-sysinfo.png" target="_blank"><img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banner and system information"></a>
-  <a href="screenshots/04-html-report.png" target="_blank"><img src="screenshots/04-html-report.png" width="49%" alt="HTML dashboard report"></a>
+  <img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banner and system information">
+  <img src="screenshots/04-html-report.png" width="49%" alt="HTML dashboard report">
 </p>
 
 More screenshots (final summary, full operations detail) are available in the [`screenshots/`](screenshots/) folder.
