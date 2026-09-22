@@ -8,16 +8,20 @@ Un script de maintenance Windows 11 tout-en-un, en une seule commande : diagnost
 
 ---
 
-## Captures d'ecran
+## Sommaire
 
-<p align="center">
-  <img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banniere et informations systeme">
-  <img src="screenshots/02-final-summary.png" width="49%" alt="Resume final">
-</p>
-<p align="center">
-  <img src="screenshots/03-operations-detail.png" width="49%" alt="Detail complet des operations">
-  <img src="screenshots/04-html-report.png" width="49%" alt="Rapport HTML">
-</p>
+- [Langue](#langue)
+- [Presentation](#presentation)
+- [Captures d'ecran](#captures-decran)
+- [Comment fonctionne le diagnostic de sante](#comment-fonctionne-le-diagnostic-de-sante)
+- [Les 6 etapes](#les-6-etapes)
+- [Notes techniques : detection DISM/SFC bilingue et nettoyage de sortie](#notes-techniques--detection-dismsfc-bilingue-et-nettoyage-de-sortie)
+- [Prerequis](#prerequis)
+- [Premier lancement](#premier-lancement-pas-a-pas)
+- [Parametres en ligne de commande](#parametres-en-ligne-de-commande)
+- [Rapports generes](#rapports-generes)
+- [Deploiement multi-machines](#deploiement-multi-machines)
+- [Depannage](#depannage)
 
 ---
 
@@ -34,28 +38,22 @@ Si vous utilisez une ancienne version de SpicyCheck (anterieure a la v7.3) qui u
 
 ---
 
-## Sommaire
-
-- [Captures d'ecran](#captures-decran)
-- [Langue](#langue)
-- [Presentation](#presentation)
-- [Comment fonctionne le diagnostic de sante](#comment-fonctionne-le-diagnostic-de-sante)
-- [Les 6 etapes](#les-6-etapes)
-- [Notes techniques : detection DISM/SFC bilingue et nettoyage de sortie](#notes-techniques--detection-dismsfc-bilingue-et-nettoyage-de-sortie)
-- [Prerequis](#prerequis)
-- [Premier lancement](#premier-lancement-pas-a-pas)
-- [Parametres en ligne de commande](#parametres-en-ligne-de-commande)
-- [Rapports generes](#rapports-generes)
-- [Deploiement multi-machines](#deploiement-multi-machines)
-- [Depannage](#depannage)
-
----
-
 ## Presentation
 
 `SpicyCheck-v7_3.ps1` execute en une passe un cycle de maintenance Windows 11 complet : affichage des informations systeme (style fastfetch), diagnostic de sante (~16 controles independants), nettoyage des fichiers temporaires/caches, reparation systeme (DISM CheckHealth → ScanHealth → RestoreHealth conditionnel → SFC scannow → verification du bootloader), optimisation des disques (TRIM pour SSD, defragmentation pour HDD), puis generation d'un rapport HTML avec tableau de bord.
 
 Chaque etape est journalisee (`maintenance_<horodatage>.log`) et chaque operation est classee par statut (`OK` / `WARN` / `ERROR` / `SKIP`), affiche en direct dans la console avec code couleur et repris a l'identique dans le rapport HTML final.
+
+---
+
+## Captures d'ecran
+
+<p align="center">
+  <a href="screenshots/01-banner-sysinfo.png" target="_blank"><img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banniere et informations systeme"></a>
+  <a href="screenshots/04-html-report.png" target="_blank"><img src="screenshots/04-html-report.png" width="49%" alt="Rapport HTML"></a>
+</p>
+
+D'autres captures (resume final, detail complet des operations) sont disponibles dans le dossier [`screenshots/`](screenshots/).
 
 ---
 
