@@ -48,11 +48,9 @@ Every step is logged (`maintenance_<timestamp>.log`) and every operation is clas
 
 ## Screenshots
 
-*Click an image to open it full-size in GitHub's built-in viewer, without leaving the page.*
-
 <p align="center">
-  <img src="screenshots/01-banner-sysinfo.png" width="49%" alt="Banner and system information">
-  <img src="screenshots/04-html-report.png" width="49%" alt="HTML dashboard report">
+  <img src="https://raw.githubusercontent.com/NephVx2/SpicyCheck/main/screenshots/01-banner-sysinfo.png" width="49%">
+  <img src="https://raw.githubusercontent.com/NephVx2/SpicyCheck/main/screenshots/04-html-report.png" width="49%">
 </p>
 
 More screenshots (final summary, full operations detail) are available in the [`screenshots/`](screenshots/) folder.
