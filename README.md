@@ -135,7 +135,7 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
 - Windows 11 (the script specifically targets `dism`, `sfc`, `bcdedit`, `defrag`, plus the `Storage`/`NetAdapter`/`NetTCPIP` cmdlets shipped with Windows 11).
 - PowerShell 5.1 (built into Windows) or PowerShell 7+.
-- Administrator rights (`#Requires -RunAsAdministrator` — the script refuses to start without it, no auto-elevation).
+- Administrator rights (the script auto-elevates via a UAC prompt if launched from a non-elevated session).
 - `dism.exe`, `sfc.exe`, `bcdedit.exe`, `defrag.exe`, `ipconfig.exe` reachable on the `PATH`.
 - If the script is digitally signed (recommended under `-ExecutionPolicy AllSigned`/`RemoteSigned`): the signing certificate must be trusted on the target machine.
 
@@ -145,7 +145,7 @@ Two pitfalls were identified and fixed during development, documented here to pr
 
 1. Copy `SpicyCheck-v7_3.ps1` to the target machine.
 
-2. Open PowerShell **as Administrator** — the script requires elevation up front and does not self-elevate.
+2. Open PowerShell (elevation isn't required to launch it — the script self-elevates via a UAC prompt on its own).
 
    Then go to the folder that contains the script (adjust the path; keep the quotes if it contains spaces):
 
@@ -239,7 +239,7 @@ On an unhandled fatal error, a `MAINTENANCE_ERROR.txt` file is also written dire
 
 3. **Run `-SelfTest` first** on each machine to confirm the script itself is intact and that prerequisites (binaries, cmdlets, WMI classes) are available.
 
-4. **Schedule via Windows Task Scheduler** with `-Silent`, running as Administrator (mandatory — no auto-elevation):
+4. **Schedule via Windows Task Scheduler** with `-Silent` and **Run with highest privileges** checked. A scheduled task runs non-interactively, so the script's own UAC auto-elevation prompt has nothing to show and nowhere to go — the task itself must already be configured to run elevated:
 
    | Field | Value |
    |---|---|
@@ -270,7 +270,7 @@ The [step-by-step guide](https://github.com/NephVx2/Script-blocked-Look-at-this)
 <details>
 <summary><strong>The script doesn't start at all</strong></summary>
 
-It requires Administrator rights up front (`#Requires -RunAsAdministrator`) and does not self-elevate — right-click PowerShell and choose "Run as administrator", or launch from an already-elevated terminal.
+Since v7.3.2 the script self-elevates: a UAC prompt should appear automatically if you launched it from a non-elevated session. If nothing happens, you likely declined that prompt — relaunch and accept it. In a non-interactive context (a scheduled task, a remote session with no desktop) the UAC prompt has nowhere to display; make sure the task/session itself is already configured to run elevated (see [Multi-machine deployment](#multi-machine-deployment)).
 </details>
 
 <details>
