@@ -135,7 +135,7 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 
 - Windows 11 (le script cible specifiquement `dism`, `sfc`, `bcdedit`, `defrag`, ainsi que les cmdlets `Storage`/`NetAdapter`/`NetTCPIP` livrees avec Windows 11).
 - PowerShell 5.1 (integre a Windows) ou PowerShell 7+.
-- Droits administrateur (`#Requires -RunAsAdministrator` — le script refuse de demarrer sans, aucune auto-elevation).
+- Droits administrateur (le script s'auto-eleve via une invite UAC s'il est lance depuis une session non elevee).
 - Binaires `dism.exe`, `sfc.exe`, `bcdedit.exe`, `defrag.exe`, `ipconfig.exe` accessibles dans le `PATH`.
 - Si le script est signe numeriquement (recommande en `-ExecutionPolicy AllSigned`/`RemoteSigned`) : le certificat de signature doit etre approuve sur la machine cible.
 
@@ -145,7 +145,7 @@ Deux pieges ont ete identifies et corriges au fil du developpement, documentes i
 
 1. Copier `SpicyCheck-v7_3.ps1` sur la machine cible.
 
-2. Ouvrir PowerShell **en tant qu'Administrateur** — le script exige l'elevation des le depart et ne s'auto-eleve pas.
+2. Ouvrir PowerShell (l'elevation n'est pas necessaire pour le lancer — le script s'auto-eleve lui-meme via une invite UAC).
 
    Puis se placer dans le dossier qui contient le script (adapter le chemin ; garder les guillemets s'il contient des espaces) :
 
@@ -239,7 +239,7 @@ En cas d'erreur fatale non geree, un fichier `MAINTENANCE_ERROR.txt` est egaleme
 
 3. **Executer `-SelfTest` en premier** sur chaque machine pour confirmer que le script lui-meme est intact et que les prerequis (binaires, cmdlets, classes WMI) sont disponibles.
 
-4. **Planifier via le Planificateur de taches Windows** avec `-Silent`, en s'executant en tant qu'Administrateur (obligatoire — pas d'auto-elevation) :
+4. **Planifier via le Planificateur de taches Windows** avec `-Silent` et la case **Executer avec les autorisations maximales** cochee. Une tache planifiee s'execute sans session interactive, donc l'invite UAC d'auto-elevation du script n'a rien ou nulle part ou s'afficher — la tache elle-meme doit deja etre configuree pour s'executer elevee :
 
    | Champ | Valeur |
    |---|---|
@@ -270,7 +270,7 @@ Le [guide pas a pas](https://github.com/NephVx2/Script-blocked-Look-at-this/blob
 <details>
 <summary><strong>Le script ne demarre pas du tout</strong></summary>
 
-Il exige les droits Administrateur des le depart (`#Requires -RunAsAdministrator`) et ne s'auto-eleve pas — faire un clic droit sur PowerShell et choisir "Executer en tant qu'administrateur", ou lancer depuis un terminal deja eleve.
+Depuis la v7.3.2 le script s'auto-eleve : une invite UAC doit apparaitre automatiquement s'il est lance depuis une session non elevee. Si rien ne se passe, l'invite a probablement ete refusee — relancer et l'accepter. Dans un contexte non interactif (tache planifiee, session distante sans bureau), l'invite UAC n'a nulle part ou s'afficher ; verifier que la tache/session elle-meme est deja configuree pour s'executer elevee (voir [Deploiement multi-machines](#deploiement-multi-machines)).
 </details>
 
 <details>
